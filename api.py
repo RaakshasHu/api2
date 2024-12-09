@@ -30,7 +30,7 @@ def install_packages():
                 logging.error(f"Failed to install package '{package}'.")
 
 def configure_ngrok():
-    ngrok_token = "2pGcsrT3vF5TX6Mr4fSZuk25RN3_3RvA1N4ytzSADJXfU718u"
+    ngrok_token = "2pGe18Mcmpu5E7UukoFjWqBFepT_2m2nNPzuwpanQsdXGkiKd"
     try:
         ngrok.set_auth_token(ngrok_token)
         logging.info("Ngrok token configured successfully.")
@@ -39,11 +39,11 @@ def configure_ngrok():
 
 def update_soul_txt(public_url):
     try:
-        with open("binder1.txt", "w") as file:
+        with open("binder2.txt", "w") as file:
             file.write(public_url)
-        logging.info("Updated binder1.txt with new ngrok link.")
+        logging.info("Updated binder2.txt with new ngrok link.")
     except Exception as e:
-        logging.error(f"Failed to update binder1.txt: {str(e)}")
+        logging.error(f"Failed to update binder2.txt: {str(e)}")
 
 def update_vps_soul_txt(public_url):
     vps_ip = "157.173.113.94"
@@ -55,11 +55,11 @@ def update_vps_soul_txt(public_url):
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(vps_ip, username=vps_user, password=vps_password)
         sftp = ssh.open_sftp()
-        with sftp.open("binder1.txt", "w") as file:
+        with sftp.open("binder2.txt", "w") as file:
             file.write(public_url)
         sftp.close()
         ssh.close()
-        logging.info("Updated binder1.txt on VPS successfully.")
+        logging.info("Updated binder2.txt on VPS successfully.")
     except Exception as e:
         logging.error(f"Failed to update binder1.txt on VPS: {str(e)}")
 
