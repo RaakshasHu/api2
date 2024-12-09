@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 def log_message_periodically():
     def periodic_logging():
-        while True:
+        while True: 
             logging.info("Virtual Venture OP DDOS")
             time.sleep(60)  # 5 minutes in seconds
     thread = threading.Thread(target=periodic_logging, daemon=True)
