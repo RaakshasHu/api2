@@ -117,7 +117,7 @@ def run_flask_app():
             return jsonify({'error': 'Missing parameters'}), 400
 
         command = f"./Spike {ip} {port} {duration} 256 1200"
-        response = execute_command_async(command, int(duration))
+        response = execute_command_async(command, int(duration)) 
         return jsonify(response)
 
     logging.info("Starting Flask server...")
